@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "devbox_launcher"
+
+DevboxLauncher::CLI.start(ARGV)

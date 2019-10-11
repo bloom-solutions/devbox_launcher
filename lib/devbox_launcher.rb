@@ -1,6 +1,11 @@
+require "ghost/cli"
+require "open3"
+require "thor"
+require "yaml"
 require "devbox_launcher/version"
 
 module DevboxLauncher
   class Error < StandardError; end
-  # Your code goes here...
 end
+
+require "devbox_launcher/cli"

@@ -16,6 +16,12 @@ Assuming you have gone through `gcloud init` and set the default project to wher
 devbox start mybox
 ```
 
+If you installed the gem via RVM:
+
+```sh
+rvmsudo devbox start mybox
+```
+
 It will ask you for sudo password so it can set the `mybox-devbox` host.
 
 ```ssh
