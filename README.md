@@ -1,24 +1,26 @@
 # DevboxLauncher
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/devbox_launcher`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Start devboxes quickly
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Install the gem:
 
-```ruby
-gem 'devbox_launcher'
+```sh
+gem install devbox_launcher
 ```
 
-And then execute:
+Assuming you have gone through `gcloud init` and set the default project to where your VM is:
 
-    $ bundle
+```sh
+devbox start mybox
+```
 
-Or install it yourself as:
+It will ask you for sudo password so it can set the `mybox-devbox` host.
 
-    $ gem install devbox_launcher
+```ssh
+ssh user@mybox-devbox
+```
 
 ## Usage
 
