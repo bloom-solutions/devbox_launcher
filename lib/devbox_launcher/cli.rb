@@ -29,10 +29,10 @@ module DevboxLauncher
     no_commands do
       def wait_boot(hostname, username)
         Net::SSH.start(hostname, username, timeout: WAIT_BOOT_IN_SECONDS) do |ssh|
-          puts "[#{ssh.exec!('date')}] Machine booted"
+          puts "[#{ssh.exec!('date').chomp}] Machine booted"
         end
       rescue Net::SSH::ConnectionTimeout
-        puts "Not booted..."
+        puts "Not booted. Waiting #{WAIT_BOOT_IN_SECONDS} seconds before trying again..."
         wait_boot hostname, username
       end
     end
