@@ -34,4 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "thor"
   spec.add_runtime_dependency "ghost"
   spec.add_runtime_dependency "net-ssh"
+  spec.add_runtime_dependency "ed25519"
+  spec.add_runtime_dependency "bcrypt_pbkdf"
 end
