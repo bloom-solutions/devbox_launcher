@@ -4,7 +4,7 @@ module DevboxLauncher
     WAIT_BOOT_IN_SECONDS = 10.freeze
 
     desc "start boxname", "Start a devbox by name"
-    def start(name)
+    def start(name, username=nil)
       require "pry"
       start_command = %Q(gcloud compute instances start #{name})
       start_stdout, start_stderr, start_status = Open3.capture3(start_command)
@@ -23,7 +23,8 @@ module DevboxLauncher
  
       Ghost::Cli.new.parse(["set", hostname, ip])
 
-      wait_boot(hostname, name)
+      name_or_username = username || name
+      wait_boot(hostname, name_or_username)
     end
 
     no_commands do
