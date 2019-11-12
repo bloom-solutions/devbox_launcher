@@ -1,4 +1,4 @@
-require "ghost/cli"
+require "ssh-config"
 require "open3"
 require "thor"
 require "net/ssh"

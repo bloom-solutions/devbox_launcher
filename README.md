@@ -10,27 +10,22 @@ Install the gem:
 gem install devbox_launcher
 ```
 
-Assuming you have gone through `gcloud init` and set the default project to where your VM is:
-
-```sh
-devbox start mybox
-```
-
-If you installed the gem via RVM:
-
-```sh
-rvmsudo devbox start mybox
-```
-
-It will ask you for sudo password so it can set the `mybox-devbox` host.
-
-```ssh
-ssh user@mybox-devbox
-```
+Setup gcloud init with the project that contains your VM.
 
 ## Usage
 
-TODO: Write usage instructions here
+```sh
+devbox start yourusername mybox
+```
+
+This is an example of how you can use this with oslogin, mutagen to sync files, and then mosh in:
+
+```sh
+devbox start ramon ramon_bloom_solutions && \
+  mutagen terminate --all && \
+  mutagen sync create ~/src ramon-devbox:~/src && \
+  mosh ramon-devbox
+```
 
 ## Development
 
