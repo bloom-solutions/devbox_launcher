@@ -15,7 +15,7 @@ Setup gcloud init with the project that contains your VM.
 ## Usage
 
 ```sh
-devbox start yourusername mybox
+devbox start your-instance-name your-username
 ```
 
 This is an example of how you can use this with oslogin, mutagen to sync files, and then mosh in:
