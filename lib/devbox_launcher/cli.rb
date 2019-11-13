@@ -15,6 +15,14 @@ module DevboxLauncher
       describe_stdout, describe_stderr, describe_status =
         Open3.capture3(describe_command)
 
+      if !describe_status.success?
+        msg = "Problem fetching the IP address. "
+        msg += "Please ensure you can call `#{describe_command}`.\n"
+        msg += "Error:\n"
+        msg += describe_stderr
+        fail msg
+      end
+
       description = YAML.load(describe_stdout)
 
       ip = description["networkInterfaces"].first["accessConfigs"].
