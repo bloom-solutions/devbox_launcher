@@ -28,6 +28,8 @@ module DevboxLauncher
       ip = description["networkInterfaces"].first["accessConfigs"].
         find { |config| config["kind"] == "compute#accessConfig" }["natIP"]
 
+      puts "IP: #{ip}"
+
       hostname = "#{name}-devbox"
  
       name_or_username = username || name
