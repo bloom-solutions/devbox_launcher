@@ -1,3 +1,4 @@
+require "active_support/core_ext/hash/indifferent_access"
 require "ssh-config"
 require "open3"
 require "thor"

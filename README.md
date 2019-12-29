@@ -14,14 +14,27 @@ Setup gcloud init with the project that contains your VM.
 
 ## Usage
 
+`gcloud auth list` should already have the account/s setup. If not, login via `gcloud auth login`.
+
+Create the config file so you type less. This is an example of a personal and work configuration:
+
+```yml
+ramon@email.com:
+  project: general-192303
+  box: your-instance-name
+ramon@company.com:
+  project: development-254604
+  box: ramon
+```
+
 ```sh
-devbox start your-instance-name your-username
+devbox start your-username
 ```
 
 This is an example of how you can use this with oslogin, mutagen to sync files, and then mosh in:
 
 ```sh
-devbox start ramon ramon_bloom_solutions && \
+devbox start ramon_bloom_solutions && \
   mutagen terminate --all && \
   mutagen sync create ~/src ramon-devbox:~/src && \
   mosh ramon-devbox

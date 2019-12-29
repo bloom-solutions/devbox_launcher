@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "ed25519"
   spec.add_runtime_dependency "bcrypt_pbkdf"
   spec.add_runtime_dependency "ssh-config"
+  spec.add_runtime_dependency "activesupport"
 end

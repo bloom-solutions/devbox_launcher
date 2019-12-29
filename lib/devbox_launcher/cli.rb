@@ -4,9 +4,29 @@ module DevboxLauncher
     WAIT_BOOT_IN_SECONDS = 10.freeze
     DEFAULT_IDENTIFY_FILE_PATH = "~/.ssh/google_compute_engine".freeze
     SSH_CONFIG_PATH = File.expand_path("~/.ssh/config").freeze
+    CONFIG_PATH = File.expand_path("~/.devbox_launcher.yml").freeze
+    CONFIG = YAML.load_file(CONFIG_PATH).freeze
 
-    desc "start boxname", "Start a devbox by name"
-    def start(name, username=nil)
+    desc "start configured box for account", "Start a devbox by account"
+    def start(account)
+      if not CONFIG.has_key?(account)
+        fail "No config in #{CONFIG_PATH} found for #{account}"
+      end
+
+      config = CONFIG[account].with_indifferent_access
+
+      username = account.gsub(/\W/, "_")
+
+      set_account_command = %Q(gcloud config set account #{account})
+      set_account_stdout, set_account_stderr, set_account_status =
+        Open3.capture3(set_account_command)
+
+      set_project_command = %Q(gcloud config set project #{config[:project]})
+      set_project_stdout, set_project_stderr, set_project_status =
+        Open3.capture3(set_project_command)
+
+      name = config[:box]
+
       start_command = %Q(gcloud compute instances start #{name})
       start_stdout, start_stderr, start_status = Open3.capture3(start_command)
 
@@ -32,14 +52,12 @@ module DevboxLauncher
 
       hostname = "#{name}-devbox"
  
-      name_or_username = username || name
-
       set_ssh_config!(hostname, {
-        username: name_or_username,
+        username: username,
         ip: ip,
        })
 
-      wait_boot(hostname, name_or_username)
+      wait_boot(hostname, username)
     end
 
     no_commands do
