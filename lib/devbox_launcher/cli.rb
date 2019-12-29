@@ -58,6 +58,36 @@ module DevboxLauncher
        })
 
       wait_boot(hostname, username)
+
+      if mutagen_dir = config[:mutagen]
+        puts "Terminating all mutagen sessions..."
+        terminate_mutagen_command = %Q(mutagen terminate --all)
+        terminate_mutagen_stdout,
+          terminate_mutagen_stderr,
+          terminate_mutagen_status =
+          Open3.capture3(terminate_mutagen_command)
+
+        if not terminate_mutagen_status.success?
+          # mutagen prints to stdout
+          fail "Failed to terminate mutagen sessions: #{terminate_mutagen_stdout}"
+        end
+
+        puts "Create mutagen session syncing #{mutagen_dir}"
+        create_mutagen_command = [
+          "mutagen sync create",
+          mutagen_dir,
+          "#{hostname}:#{mutagen_dir}",
+        ].join(" ")
+        create_mutagen_stdout,
+          create_mutagen_stderr,
+          create_mutagen_status =
+          Open3.capture3(create_mutagen_command)
+
+        if not create_mutagen_status.success?
+          # mutagen prints to stdout
+          fail "Failed to create mutagen session: #{create_mutagen_stdout}"
+        end
+      end
     end
 
     no_commands do

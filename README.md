@@ -22,6 +22,7 @@ Create the config file so you type less. This is an example of a personal and wo
 ramon@email.com:
   project: general-192303
   box: your-instance-name
+  mutagen: ~/src # sync this between local and remote machine
 ramon@company.com:
   project: development-254604
   box: ramon
