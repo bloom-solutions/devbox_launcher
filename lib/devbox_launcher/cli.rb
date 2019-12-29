@@ -51,7 +51,7 @@ module DevboxLauncher
       puts "IP: #{ip}"
 
       hostname = "#{name}-devbox"
- 
+
       set_ssh_config!(hostname, {
         username: username,
         ip: ip,
