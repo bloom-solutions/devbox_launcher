@@ -8,6 +8,8 @@ module DevboxLauncher
     CONFIG = YAML.load_file(CONFIG_PATH).freeze
 
     desc "start configured box for account", "Start a devbox by account"
+    option :mosh, type: :boolean, desc: "Mosh in"
+
     def start(account)
       if not CONFIG.has_key?(account)
         fail "No config in #{CONFIG_PATH} found for #{account}"
@@ -87,6 +89,11 @@ module DevboxLauncher
           # mutagen prints to stdout
           fail "Failed to create mutagen session: #{create_mutagen_stdout}"
         end
+      end
+
+      if options[:mosh]
+        mosh_command = %Q(mosh #{hostname})
+        system(mosh_command)
       end
     end
 
