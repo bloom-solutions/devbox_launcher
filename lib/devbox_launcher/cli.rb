@@ -70,8 +70,11 @@ module DevboxLauncher
           Open3.capture3(terminate_mutagen_command)
 
         if not terminate_mutagen_status.success?
-          # mutagen prints to stdout
-          fail "Failed to terminate mutagen sessions: #{terminate_mutagen_stdout}"
+          # mutagen prints to stdout and stderr
+          msg = "Failed to terminate mutagen sessions: " \
+            "#{terminate_mutagen_stdout} -" \
+            "#{terminate_mutagen_stderr}"
+          fail msg
         end
 
         puts "Create mutagen session syncing #{mutagen_dir}"
@@ -86,8 +89,11 @@ module DevboxLauncher
           Open3.capture3(create_mutagen_command)
 
         if not create_mutagen_status.success?
-          # mutagen prints to stdout
-          fail "Failed to create mutagen session: #{create_mutagen_stdout}"
+          # mutagen prints to stdout and stderr
+          msg = "Failed to create mutagen sessions: " \
+            "#{create_mutagen_stdout} -" \
+            "#{create_mutagen_stderr}"
+          fail msg
         end
       end
 
