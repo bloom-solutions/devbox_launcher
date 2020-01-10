@@ -61,7 +61,10 @@ module DevboxLauncher
 
       wait_boot(hostname, username)
 
-      if mutagen_dir = config[:mutagen]
+      mutagen_alpha_dir = config[:mutagen][:alpha]
+      mutagen_beta_dir = config[:mutagen][:beta]
+
+      if [mutagen_alpha_dir, mutagen_beta_dir].all?
         puts "Terminating all mutagen sessions..."
         terminate_mutagen_command = %Q(mutagen terminate --all)
         terminate_mutagen_stdout,
@@ -77,11 +80,11 @@ module DevboxLauncher
           fail msg
         end
 
-        puts "Create mutagen session syncing #{mutagen_dir}"
+        puts "Create mutagen session syncing local #{mutagen_alpha_dir} with #{hostname} #{mutagen_beta_dir}"
         create_mutagen_command = [
           "mutagen sync create",
-          mutagen_dir,
-          "#{hostname}:#{mutagen_dir}",
+          mutagen_alpha_dir,
+          "#{hostname}:#{mutagen_beta_dir}",
         ].join(" ")
         create_mutagen_stdout,
           create_mutagen_stderr,
