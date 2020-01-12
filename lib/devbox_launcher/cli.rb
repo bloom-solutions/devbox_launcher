@@ -61,8 +61,8 @@ module DevboxLauncher
 
       wait_boot(hostname, username)
 
-      mutagen_alpha_dir = config[:mutagen][:alpha]
-      mutagen_beta_dir = config[:mutagen][:beta]
+      mutagen_alpha_dir = config[:mutagen][:alpha] if config[:mutagen]
+      mutagen_beta_dir = config[:mutagen][:beta] if config[:mutagen]
 
       if [mutagen_alpha_dir, mutagen_beta_dir].all?
         puts "Terminating all mutagen sessions..."
