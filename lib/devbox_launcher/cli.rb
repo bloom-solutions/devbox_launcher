@@ -61,44 +61,10 @@ module DevboxLauncher
 
       wait_boot(hostname, username)
 
-      mutagen_alpha_dir = config[:mutagen][:alpha] if config[:mutagen]
-      mutagen_beta_dir = config[:mutagen][:beta] if config[:mutagen]
-
-      if [mutagen_alpha_dir, mutagen_beta_dir].all?
-        puts "Terminating all mutagen sessions..."
-        terminate_mutagen_command = %Q(mutagen terminate --all)
-        terminate_mutagen_stdout,
-          terminate_mutagen_stderr,
-          terminate_mutagen_status =
-          Open3.capture3(terminate_mutagen_command)
-
-        if not terminate_mutagen_status.success?
-          # mutagen prints to stdout and stderr
-          msg = "Failed to terminate mutagen sessions: " \
-            "#{terminate_mutagen_stdout} -" \
-            "#{terminate_mutagen_stderr}"
-          fail msg
-        end
-
-        puts "Create mutagen session syncing local #{mutagen_alpha_dir} with #{hostname} #{mutagen_beta_dir}"
-        create_mutagen_command = [
-          "mutagen sync create",
-          mutagen_alpha_dir,
-          "#{hostname}:#{mutagen_beta_dir}",
-        ].join(" ")
-        create_mutagen_stdout,
-          create_mutagen_stderr,
-          create_mutagen_status =
-          Open3.capture3(create_mutagen_command)
-
-        if not create_mutagen_status.success?
-          # mutagen prints to stdout and stderr
-          msg = "Failed to create mutagen sessions: " \
-            "#{create_mutagen_stdout} -" \
-            "#{create_mutagen_stderr}"
-          fail msg
-        end
-      end
+      reset_mutagen_session(
+        mutagen_config: config[:mutagen],
+        hostname: hostname,
+      )
 
       if options[:mosh]
         mosh_command = %Q(mosh #{hostname})
@@ -128,6 +94,49 @@ module DevboxLauncher
           config.set(hostname, key, value)
         end
         config.save
+      end
+
+      def reset_mutagen_session(mutagen_config:, hostname:)
+        return if mutagen_config.nil?
+        alpha_dir = mutagen_config[:alpha]
+        beta_dir = mutagen_config[:beta]
+
+        return if alpha_dir.nil? || beta_dir.nil?
+
+        puts "Terminating all mutagen sessions..."
+        terminate_mutagen_command = %Q(mutagen terminate --all)
+        terminate_mutagen_stdout,
+          terminate_mutagen_stderr,
+          terminate_mutagen_status =
+          Open3.capture3(terminate_mutagen_command)
+
+        if not terminate_mutagen_status.success?
+          # mutagen prints to stdout and stderr
+          msg = "Failed to terminate mutagen sessions: " \
+            "#{terminate_mutagen_stdout} -" \
+            "#{terminate_mutagen_stderr}"
+          fail msg
+        end
+
+        puts "Create mutagen session syncing local #{alpha_dir} " \
+          "with #{hostname} #{beta_dir}"
+        create_mutagen_command = [
+          "mutagen sync create",
+          alpha_dir,
+          "#{hostname}:#{beta_dir}",
+        ].join(" ")
+        create_mutagen_stdout,
+          create_mutagen_stderr,
+          create_mutagen_status =
+          Open3.capture3(create_mutagen_command)
+
+        if not create_mutagen_status.success?
+          # mutagen prints to stdout and stderr
+          msg = "Failed to create mutagen sessions: " \
+            "#{create_mutagen_stdout} -" \
+            "#{create_mutagen_stderr}"
+          fail msg
+        end
       end
     end
 
