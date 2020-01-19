@@ -37,4 +37,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "bcrypt_pbkdf"
   spec.add_runtime_dependency "ssh-config"
   spec.add_runtime_dependency "activesupport"
+  spec.add_runtime_dependency "deep_fetch"
 end
