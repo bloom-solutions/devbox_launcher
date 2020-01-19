@@ -31,11 +31,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
 
-  spec.add_runtime_dependency "activesupport"
-  spec.add_runtime_dependency "bcrypt_pbkdf"
-  spec.add_runtime_dependency "deep_fetch"
-  spec.add_runtime_dependency "ed25519"
-  spec.add_runtime_dependency "net-ssh"
-  spec.add_runtime_dependency "ssh-config"
-  spec.add_runtime_dependency "thor"
+  spec.add_runtime_dependency "thor", "~> 1.0"
+  spec.add_runtime_dependency "net-ssh", "~> 5.2"
+  spec.add_runtime_dependency "ed25519", "~> 1.2"
+  spec.add_runtime_dependency "bcrypt_pbkdf", "~> 1.0"
+  spec.add_runtime_dependency "ssh-config", "0.1.3"
+  spec.add_runtime_dependency "activesupport", "~> 6.0"
 end
