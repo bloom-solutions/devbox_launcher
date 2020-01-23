@@ -6,6 +6,7 @@ module DevboxLauncher
     SSH_CONFIG_PATH = File.expand_path("~/.ssh/config").freeze
     CONFIG_PATH = File.expand_path("~/.devbox_launcher.yml").freeze
     CONFIG = YAML.load_file(CONFIG_PATH).freeze
+    LABEL = "devbox".freeze
 
     desc "start configured box for account", "Start a devbox by account"
     option :mosh, type: :boolean, desc: "Mosh in"
@@ -103,8 +104,22 @@ module DevboxLauncher
 
         return if alpha_dir.nil? || beta_dir.nil?
 
-        puts "Terminating all mutagen sessions..."
-        terminate_mutagen_command = %Q(mutagen terminate --all)
+        terminate_mutagen_session
+        create_mutagen_session(
+          alpha_dir: alpha_dir,
+          beta_dir: beta_dir,
+          hostname: hostname,
+        )
+
+        if OS.linux?
+          watch_alpha(alpha_dir: alpha_dir)
+        end
+      end
+
+      def terminate_mutagen_session
+        puts "Terminating mutagen session..."
+        terminate_mutagen_command =
+          %Q(mutagen terminate --label-selector=#{LABEL})
         terminate_mutagen_stdout,
           terminate_mutagen_stderr,
           terminate_mutagen_status =
@@ -117,18 +132,24 @@ module DevboxLauncher
             "#{terminate_mutagen_stderr}"
           fail msg
         end
+      end
 
+      def create_mutagen_session(alpha_dir:, beta_dir:, hostname:)
         puts "Create mutagen session syncing local #{alpha_dir} " \
           "with #{hostname} #{beta_dir}"
+
         create_mutagen_command = [
           "mutagen sync create",
           alpha_dir,
           "#{hostname}:#{beta_dir}",
-        ].join(" ")
+          "--label=#{LABEL}",
+        ]
+        create_mutagen_command << "--watch-mode-alpha=no-watch" if OS.linux?
+
         create_mutagen_stdout,
           create_mutagen_stderr,
           create_mutagen_status =
-          Open3.capture3(create_mutagen_command)
+          Open3.capture3(create_mutagen_command.join(" "))
 
         if not create_mutagen_status.success?
           # mutagen prints to stdout and stderr
@@ -137,6 +158,11 @@ module DevboxLauncher
             "#{create_mutagen_stderr}"
           fail msg
         end
+      end
+
+      def watch_alpha(alpha_dir:)
+        watchman = Watchman.new(dir: alpha_dir)
+        watchman.trigger("mutagen sync flush --label-selector=#{LABEL}")
       end
     end
 
