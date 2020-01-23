@@ -38,6 +38,8 @@ devbox start your-username
 
 If you want to mosh in immediately, add the `--mosh` switch.
 
+Note: Linux users that sync mutagen sessions need to install [Watchman](https://facebook.github.io/watchman/).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
