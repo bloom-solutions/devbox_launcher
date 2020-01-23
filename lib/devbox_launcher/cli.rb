@@ -104,7 +104,8 @@ module DevboxLauncher
         return if alpha_dir.nil? || beta_dir.nil?
 
         puts "Terminating all mutagen sessions..."
-        terminate_mutagen_command = %Q(mutagen terminate --all)
+        terminate_mutagen_command =
+          %Q(mutagen terminate --label-selector=devbox)
         terminate_mutagen_stdout,
           terminate_mutagen_stderr,
           terminate_mutagen_status =
@@ -124,6 +125,7 @@ module DevboxLauncher
           "mutagen sync create",
           alpha_dir,
           "#{hostname}:#{beta_dir}",
+          "--label=devbox",
         ].join(" ")
         create_mutagen_stdout,
           create_mutagen_stderr,
