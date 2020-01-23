@@ -39,4 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "bcrypt_pbkdf", "~> 1.0"
   spec.add_runtime_dependency "ssh-config", "0.1.3"
   spec.add_runtime_dependency "activesupport", "~> 6.0"
+  spec.add_runtime_dependency "os", "~> 1.0"
+  spec.add_runtime_dependency "ruby-watchman", "0.0.2"
 end
