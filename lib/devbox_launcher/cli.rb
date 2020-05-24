@@ -17,8 +17,11 @@ module DevboxLauncher
       end
 
       config = CONFIG[account].with_indifferent_access
+      name = config[:box]
 
       username = account.gsub(/\W/, "_")
+
+      puts "Starting #{name}..."
 
       set_account_command = %Q(gcloud config set account #{account})
       set_account_stdout, set_account_stderr, set_account_status =
@@ -28,39 +31,11 @@ module DevboxLauncher
       set_project_stdout, set_project_stderr, set_project_status =
         Open3.capture3(set_project_command)
 
-      name = config[:box]
+      start_box name, username
 
-      start_command = %Q(gcloud compute instances start #{name})
-      start_stdout, start_stderr, start_status = Open3.capture3(start_command)
+      wait_boot(name, username)
 
-      puts "Fetching IP..."
-      describe_command = %Q(gcloud compute instances describe #{name})
-      describe_stdout, describe_stderr, describe_status =
-        Open3.capture3(describe_command)
-
-      if !describe_status.success?
-        msg = "Problem fetching the IP address. "
-        msg += "Please ensure you can call `#{describe_command}`.\n"
-        msg += "Error:\n"
-        msg += describe_stderr
-        fail msg
-      end
-
-      description = YAML.load(describe_stdout)
-
-      ip = description["networkInterfaces"].first["accessConfigs"].
-        find { |config| config["kind"] == "compute#accessConfig" }["natIP"]
-
-      puts "IP: #{ip}"
-
-      hostname = "#{name}-devbox"
-
-      set_ssh_config!(hostname, {
-        username: username,
-        ip: ip,
-       })
-
-      wait_boot(hostname, username)
+      hostname = hostname_for(name)
 
       reset_mutagen_session(
         mutagen_config: config[:mutagen],
@@ -74,13 +49,25 @@ module DevboxLauncher
     end
 
     no_commands do
-      def wait_boot(hostname, username)
+      def wait_boot(name, username, tries: 1)
+        hostname = hostname_for(name)
+
         Net::SSH.start(hostname, username, timeout: WAIT_BOOT_IN_SECONDS) do |ssh|
           puts "[#{ssh.exec!('date').chomp}] Machine booted"
         end
       rescue Net::SSH::ConnectionTimeout, Net::SSH::Disconnect, Errno::ECONNRESET
         puts "Not booted. Waiting #{WAIT_BOOT_IN_SECONDS} seconds before trying again..."
-        wait_boot hostname, username
+
+        sleep WAIT_BOOT_IN_SECONDS
+
+        description = describe(name)
+        if !description.running?
+          puts "Detected that the machine is not running " \
+            "(status is #{description.status}). Booting it..."
+          start_box name, username
+        end
+
+        wait_boot name, username, tries: tries+1
       end
 
       def set_ssh_config!(hostname, username:, ip:)
@@ -163,6 +150,41 @@ module DevboxLauncher
       def watch_alpha(alpha_dir:)
         watchman = Watchman.new(dir: alpha_dir)
         watchman.trigger("mutagen sync flush --label-selector=#{LABEL}")
+      end
+
+      def start_box(name, username)
+        start_command = %Q(gcloud compute instances start #{name})
+        start_stdout, start_stderr, start_status = Open3.capture3(start_command)
+
+        desc = describe(name)
+        ip = desc.ip
+
+        set_ssh_config!(hostname_for(name), {
+          username: username,
+          ip: ip,
+        })
+      end
+
+      def describe(name)
+        puts "Fetching box's description..."
+
+        describe_command = %Q(gcloud compute instances describe #{name})
+        describe_stdout, describe_stderr, describe_status =
+          Open3.capture3(describe_command)
+
+        if !describe_status.success?
+          msg = "Problem fetching the description of #{name}. "
+          msg += "Please ensure you can call `#{describe_command}`.\n"
+          msg += "Error:\n"
+          msg += describe_stderr
+          fail msg
+        end
+
+        Description.new(describe_stdout)
+      end
+
+      def hostname_for(name)
+        [name, "devbox"].join("-")
       end
     end
 
