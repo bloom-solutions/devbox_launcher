@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    devbox_launcher (0.3.2)
+    devbox_launcher (0.3.3)
       activesupport (~> 6.0)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
