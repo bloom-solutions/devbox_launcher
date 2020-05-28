@@ -157,7 +157,7 @@ module DevboxLauncher
     end
 
     def label
-      "#{username}=#{name}",
+      "#{username}=#{name}"
     end
 
     def create_mutagen_session
