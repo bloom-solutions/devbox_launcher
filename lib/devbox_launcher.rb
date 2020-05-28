@@ -17,3 +17,5 @@ end
 require "devbox_launcher/cli"
 require "devbox_launcher/watchman"
 require "devbox_launcher/models/description"
+require "devbox_launcher/models/mutagen"
+require "devbox_launcher/models/box"
