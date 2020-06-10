@@ -6,6 +6,7 @@ module DevboxLauncher
       Net::SSH::Disconnect,
       Errno::ECONNRESET,
       Errno::ETIMEDOUT,
+      Errno::ECONNREFUSED,
     ]
     WAIT_BOOT_IN_SECONDS = 10.freeze
     DEFAULT_IDENTIFY_FILE_PATH = "~/.ssh/google_compute_engine".freeze
