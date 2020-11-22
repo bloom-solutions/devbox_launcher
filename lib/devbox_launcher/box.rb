@@ -22,7 +22,7 @@ module DevboxLauncher
 
     def start
       start_stdout, start_stderr, start_status =
-        Open3.capture3(start_cmd)
+        run_command(start_cmd)
 
       set_ssh_config!(hostname, {
         username: username,
@@ -81,7 +81,7 @@ module DevboxLauncher
 
       describe_command = %Q(gcloud compute instances describe #{name})
       describe_stdout, describe_stderr, describe_status =
-        Open3.capture3(describe_command)
+        run_command(describe_command)
 
       if !describe_status.success?
         msg = "Problem fetching the description of #{name}. "
@@ -138,7 +138,7 @@ module DevboxLauncher
       terminate_mutagen_stdout,
         terminate_mutagen_stderr,
         terminate_mutagen_status =
-        Open3.capture3(terminate_mutagen_command)
+        run_command(terminate_mutagen_command)
 
       if not terminate_mutagen_status.success?
         # mutagen prints to stdout and stderr
@@ -164,7 +164,7 @@ module DevboxLauncher
       create_mutagen_stdout,
         create_mutagen_stderr,
         create_mutagen_status =
-        Open3.capture3(create_mutagen_command.join(" "))
+        run_command(create_mutagen_command.join(" "))
 
       if not create_mutagen_status.success?
         # mutagen prints to stdout and stderr
@@ -200,6 +200,13 @@ module DevboxLauncher
       end
 
       @config = CONFIG[account].with_indifferent_access
+    end
+
+    def run_command(command, tries: 0)
+      Open3.capture3(command)
+    rescue *WAIT_BOOT_RESCUED_EXCEPTIONS
+      sleep WAIT_BOOT_IN_SECONDS
+      run_command(command, tries+1)
     end
 
   end
