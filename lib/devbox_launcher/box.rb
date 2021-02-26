@@ -158,6 +158,7 @@ module DevboxLauncher
         alpha_dir,
         "#{hostname}:#{beta_dir}",
         "--label=#{username}",
+        "--sync-mode=two-way-resolved",
       ]
       create_mutagen_command << "--watch-mode-alpha=no-watch" if OS.linux?
 
