@@ -38,6 +38,7 @@ module DevboxLauncher
       args = {
         project: config[:project],
         account: account,
+        zone: (config[:zone] || 'us-central1-a'),
       }.map do |(key, val)|
         ["--#{key}", val].join("=")
       end.join(" ")
