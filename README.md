@@ -4,13 +4,9 @@ Start devboxes quickly
 
 ## Installation
 
-Install the gem:
-
-```sh
-gem install devbox_launcher
-```
-
-Setup gcloud init with the project that contains your VM.
+- Install the gem: `gem install devbox_launcher`
+- Setup `gcloud init` with the project that contains your VM
+- Install [mutagen](https://mutagen.io)
 
 ## Usage
 
