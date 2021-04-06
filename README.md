@@ -17,6 +17,9 @@ Create the config file at `~/.devbox_launcher.yml` so you type less. This is an 
 ```yml
 ramon@email.com:
   project: general-192303
+  # zone not necessarily required, but sometimes starting the box
+  # fails without this:
+  zone: us-central1-a
   box: your-instance-name
   mutagen:
     alpha: /mnt/c/Users/me/src # local machine
@@ -32,7 +35,7 @@ To start and create the mutagen session:
 devbox start your-username
 ```
 
-If you want to mosh in immediately, add the `--mosh` switch.
+If you want to mosh in immediately, add the `--mosh` switch. Yes, mosh needs to be [installed](https://mosh.org/) in your development machine.
 
 Note: Linux users that sync mutagen sessions need to install [Watchman](https://facebook.github.io/watchman/).
 
