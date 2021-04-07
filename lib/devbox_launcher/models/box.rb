@@ -35,23 +35,7 @@ module DevboxLauncher
     end
 
     def start_cmd
-      args = {
-        project: config[:project],
-        account: account,
-        zone: config[:zone],
-      }.each_with_object([]) do |(key, val), arr|
-        next if val.blank?
-        arr << ["--#{key}", val].join("=")
-      end.join(" ")
-
-      [
-        "gcloud",
-        "compute",
-        "instances",
-        "start",
-        name,
-        args
-      ].join(" ")
+      cmd_args_for('start')
     end
 
     def connect_mosh
@@ -101,21 +85,7 @@ module DevboxLauncher
     end
 
     def describe_cmd
-      args = {
-        project: config[:project],
-        account: account,
-      }.map do |(key, val)|
-        ["--#{key}", val].join("=")
-      end.join(" ")
-
-      [
-        "gcloud",
-        "compute",
-        "instances",
-        "describe",
-        name,
-        args
-      ].join(" ")
+      cmd_args_for('describe')
     end
 
     def set_ssh_config!
@@ -219,6 +189,27 @@ module DevboxLauncher
     def mutagen_config
       @mutagen_config ||= Mutagen.new(config[:mutagen])
     end
+
+    def cmd_args_for(method)
+      args = {
+        project: config[:project],
+        account: account,
+        zone: config[:zone],
+      }.each_with_object([]) do |(key, val), arr|
+        next if val.blank?
+        arr << ["--#{key}", val].join("=")
+      end.join(" ")
+
+      [
+        "gcloud",
+        "compute",
+        "instances",
+        method,
+        name,
+        args
+      ].join(" ")
+    end
+
 
   end
 end
