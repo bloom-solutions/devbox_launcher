@@ -159,6 +159,7 @@ module DevboxLauncher
         "#{hostname}:#{beta_dir}",
         "--label=#{username}",
         "--sync-mode=two-way-resolved",
+        "--ignore-vcs",
       ]
       create_mutagen_command << "--watch-mode-alpha=no-watch" if OS.linux?
 
