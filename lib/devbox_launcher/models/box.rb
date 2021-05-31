@@ -6,9 +6,10 @@ module DevboxLauncher
       Net::SSH::Disconnect,
       Errno::ECONNRESET,
       Errno::ETIMEDOUT,
+      Errno::ECONNREFUSED,
     ]
     WAIT_BOOT_IN_SECONDS = 10.freeze
-    MAX_BOOT_RETRIES = 10
+    MAX_BOOT_RETRIES = 20
     DEFAULT_IDENTIFY_FILE_PATH = "~/.ssh/google_compute_engine".freeze
     SSH_CONFIG_PATH = File.expand_path("~/.ssh/config").freeze
     CONFIG_PATH = File.expand_path("~/.devbox_launcher.yml").freeze
@@ -67,8 +68,6 @@ module DevboxLauncher
 
     def description(reload: false)
       return @description if !reload && @description
-
-      puts "Fetching box's description..."
 
       describe_stdout, describe_stderr, describe_status =
         Open3.capture3(describe_cmd)
