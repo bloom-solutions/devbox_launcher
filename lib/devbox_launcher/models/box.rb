@@ -15,11 +15,15 @@ module DevboxLauncher
     CONFIG_PATH = File.expand_path("~/.devbox_launcher.yml").freeze
     CONFIG = YAML.load_file(CONFIG_PATH).freeze
 
-    attr_reader :account, :options
+    attr_reader :account_and_box_name, :options
 
-    def initialize(account, options)
-      @account = account
+    def initialize(account_and_box_name, options)
+      @account_and_box_name = account_and_box_name
       @options = options
+    end
+
+    def account
+      @account ||= @account_and_box_name.split("/")[0]
     end
 
     def start
@@ -32,7 +36,7 @@ module DevboxLauncher
 
       reset_mutagen_session
 
-      connect_mosh
+      connect_mosh || connect_ssh
     end
 
     def start_cmd
@@ -44,6 +48,13 @@ module DevboxLauncher
 
       mosh_cmd = %Q(mosh #{hostname})
       system(mosh_cmd)
+    end
+
+    def connect_ssh
+      return if options[:ssh].nil?
+
+      ssh_cmd = %Q(ssh #{hostname})
+      system(ssh_cmd)
     end
 
     def wait_boot(tries: 1)
@@ -89,16 +100,16 @@ module DevboxLauncher
 
     def set_ssh_config!
       FileUtils.touch(SSH_CONFIG_PATH)
-      config = ConfigFile.new
+      ssh_config = ConfigFile.new
       args = {
         "HostName" => description.ip,
         "User" => username,
         "IdentityFile" => DEFAULT_IDENTIFY_FILE_PATH,
       }
       args.each do |key, value|
-        config.set(hostname, key, value)
+        ssh_config.set(hostname, key, value)
       end
-      config.save
+      ssh_config.save
     end
 
     def reset_mutagen_session
@@ -163,8 +174,31 @@ module DevboxLauncher
       watchman.trigger("mutagen sync flush --label-selector=#{label}")
     end
 
+    def box_name_from_config
+      passed_in_box_name = @account_and_box_name.split("/")[1]
+
+      case account_config.count
+      when 0
+        fail "You have to specify box configuration"
+      when 1
+        account_config.first[:box]
+      else
+        account_config[name]
+      end
+    end
+
     def name
-      @name ||= config[:box]
+      return @name if @name
+      passed_in_box_name = @account_and_box_name.split("/")[1]
+
+      name = passed_in_box_name.presence || box_name_from_config
+
+      if name.blank?
+        fail "box name must be given either in the CLI or in config. " \
+          "See README.md."
+      end
+
+      @name = name
     end
 
     def hostname
@@ -175,25 +209,29 @@ module DevboxLauncher
       @username ||= account.gsub(/\W/, "_")
     end
 
-    def config
-      return @config if @config
+    def account_config
+      return @account_config if @account_config
 
       if not CONFIG.has_key?(account)
         fail "No config in #{CONFIG_PATH} found for #{account}"
       end
 
-      @config = CONFIG[account].with_indifferent_access
+      @account_config = AccountConfig.new(account, CONFIG[account])
+    end
+
+    def box_config
+      account_config.find_box_config(name)
     end
 
     def mutagen_config
-      @mutagen_config ||= Mutagen.new(config[:mutagen])
+      @mutagen_config ||= box_config.mutagen_config
     end
 
     def cmd_args_for(method)
       args = {
-        project: config[:project],
+        project: box_config.project,
         account: account,
-        zone: config[:zone],
+        zone: box_config.zone,
       }.each_with_object([]) do |(key, val), arr|
         next if val.blank?
         arr << ["--#{key}", val].join("=")

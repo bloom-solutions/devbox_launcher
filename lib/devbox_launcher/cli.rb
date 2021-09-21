@@ -9,6 +9,7 @@ module DevboxLauncher
 
     desc "start configured box for account", "Start a devbox by account"
     option :mosh, type: :boolean, desc: "Mosh in"
+    option :ssh, type: :boolean, desc: "SSH in"
 
     def start(account)
       Box.new(account, options).start
