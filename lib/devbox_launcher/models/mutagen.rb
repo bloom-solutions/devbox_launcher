@@ -8,7 +8,8 @@ module DevboxLauncher
     end
 
     def configured?
-      [config, alpha_dir, beta_dir].none?(&:nil?)
+      return false if config.nil?
+      [alpha_dir, beta_dir].all?(&:present?)
     end
 
     def alpha_dir
