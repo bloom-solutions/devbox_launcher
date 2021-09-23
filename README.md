@@ -23,8 +23,10 @@ ramon@email.com:
       alpha: /mnt/c/Users/me/src # local machine
       beta: ~/src # remote machine
 ramon@company.com:
-  project: development-254604
-  box: ramon
+  - project: development-254604
+    box: ramon
+    user: another_user # only needed if ramon_company_com is not the user
+    identity_file: /path/to/ssh-private # ~/.ssh/google_compute_engine by default
 ```
 
 To start and create the mutagen session:

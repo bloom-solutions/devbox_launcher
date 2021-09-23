@@ -10,7 +10,6 @@ module DevboxLauncher
     ]
     WAIT_BOOT_IN_SECONDS = 10.freeze
     MAX_BOOT_RETRIES = 20
-    DEFAULT_IDENTIFY_FILE_PATH = "~/.ssh/google_compute_engine".freeze
     SSH_CONFIG_PATH = File.expand_path("~/.ssh/config").freeze
     CONFIG_PATH = File.expand_path("~/.devbox_launcher.yml").freeze
     CONFIG = YAML.load_file(CONFIG_PATH).freeze
@@ -104,7 +103,7 @@ module DevboxLauncher
       args = {
         "HostName" => description.ip,
         "User" => username,
-        "IdentityFile" => DEFAULT_IDENTIFY_FILE_PATH,
+        "IdentityFile" => box_config.identity_file,
       }
       args.each do |key, value|
         ssh_config.set(hostname, key, value)
@@ -206,7 +205,7 @@ module DevboxLauncher
     end
 
     def username
-      @username ||= account.gsub(/\W/, "_")
+      @username ||= box_config.user || account.gsub(/\W/, "_")
     end
 
     def account_config
