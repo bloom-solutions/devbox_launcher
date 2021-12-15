@@ -122,7 +122,7 @@ module DevboxLauncher
     def terminate_mutagen_session
       puts "Terminating mutagen session..."
       terminate_mutagen_cmd =
-        %Q(mutagen terminate --label-selector=#{label})
+        %Q(mutagen sync terminate --label-selector=#{label})
       terminate_mutagen_stdout,
         terminate_mutagen_stderr,
         terminate_mutagen_status =
