@@ -10,7 +10,7 @@ module DevboxLauncher
     end
 
     def mutagen_config
-      Mutagen.new(config[:mutagen])
+      MutagenConfig.new(config[:mutagen])
     end
 
     def project
