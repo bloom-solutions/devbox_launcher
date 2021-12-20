@@ -33,7 +33,7 @@ module DevboxLauncher
 
       wait_boot
 
-      reset_mutagen_session
+      mutagen_session.reset
 
       connect_mosh || connect_ssh
     end
@@ -111,66 +111,8 @@ module DevboxLauncher
       ssh_config.save
     end
 
-    def reset_mutagen_session
-      return if !mutagen_config.configured?
-
-      terminate_mutagen_session
-      create_mutagen_session
-      watch_alpha if OS.linux?
-    end
-
-    def terminate_mutagen_session
-      puts "Terminating mutagen session..."
-      terminate_mutagen_cmd =
-        %Q(mutagen sync terminate --label-selector=#{label})
-      terminate_mutagen_stdout,
-        terminate_mutagen_stderr,
-        terminate_mutagen_status =
-        Open3.capture3(terminate_mutagen_cmd)
-
-      if not terminate_mutagen_status.success?
-        # mutagen prints to stdout and stderr
-        msg = "Failed to terminate mutagen sessions: " \
-          "#{terminate_mutagen_stdout} -" \
-          "#{terminate_mutagen_stderr}"
-        fail msg
-      end
-    end
-
     def label
       "#{username}=#{name}"
-    end
-
-    def create_mutagen_session
-      puts "Create mutagen session syncing local " \
-        "#{mutagen_config.alpha_dir} with " \
-        "#{hostname} #{mutagen_config.beta_dir}"
-
-      create_mutagen_cmd = [
-        "mutagen sync create",
-        mutagen_config.alpha_dir,
-        "#{hostname}:#{mutagen_config.beta_dir}",
-        "--label=#{label}",
-      ]
-      create_mutagen_cmd << "--watch-mode-alpha=no-watch" if OS.linux?
-
-      create_mutagen_stdout,
-        create_mutagen_stderr,
-        create_mutagen_status =
-        Open3.capture3(create_mutagen_cmd.join(" "))
-
-      if not create_mutagen_status.success?
-        # mutagen prints to stdout and stderr
-        msg = "Failed to create mutagen sessions: " \
-          "#{create_mutagen_stdout} -" \
-          "#{create_mutagen_stderr}"
-        fail msg
-      end
-    end
-
-    def watch_alpha
-      watchman = Watchman.new(dir: mutagen_config.alpha_dir)
-      watchman.trigger("mutagen sync flush --label-selector=#{label}")
     end
 
     def box_name_from_config
@@ -246,6 +188,13 @@ module DevboxLauncher
       ].join(" ")
     end
 
+    def mutagen_session
+      @mutagen_session ||= MutagenSession.new(
+        label: label,
+        config: mutagen_config,
+        hostname: hostname,
+      )
+    end
 
   end
 end
