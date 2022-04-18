@@ -38,6 +38,8 @@ module DevboxLauncher
         config.alpha_dir,
         "#{hostname}:#{config.beta_dir}",
         "--label=#{label}",
+        "--ignore-vcs",
+        "--ignore=.DS_Store"
       ]
       str << "--watch-mode-alpha=no-watch" if linux?
       str.join(" ")
