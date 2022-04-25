@@ -38,6 +38,7 @@ module DevboxLauncher
         config.alpha_dir,
         "#{hostname}:#{config.beta_dir}",
         "--label=#{label}",
+        "--sync-mode=two-way-resolved",
         "--ignore-vcs",
         "--ignore=.DS_Store"
       ]
