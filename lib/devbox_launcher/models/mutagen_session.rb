@@ -66,14 +66,6 @@ module DevboxLauncher
       end
     end
 
-    def watch_alpha
-      watchman.trigger("mutagen sync flush --label-selector=#{label}")
-    end
-
-    def watchman
-      @watchman ||= Watchman.new(dir: config.alpha_dir)
-    end
-
     def reset
       return if !config.configured?
 
