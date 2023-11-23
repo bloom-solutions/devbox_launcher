@@ -79,7 +79,6 @@ module DevboxLauncher
 
       terminate
       create
-      watch_alpha if linux?
     end
 
   end
